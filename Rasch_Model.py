@@ -5,7 +5,7 @@ import pystan
 import numpy as np
 from scipy.stats import pearsonr
 from scipy.stats import spearmanr
-
+import matplotlib.pyplot as plt
 
 
 model = '''
@@ -34,8 +34,8 @@ model {
 '''
 
 
-n_s = 400 # number of students
-n_i = 100 # number of items
+n_s = 30 # number of students
+n_i = 20 # number of items
 
 # pick a random ability for each student from an N(0,1) distribution
 
@@ -68,15 +68,15 @@ kk = [0] * N
 y = [0] * N
 
 for i in range(N):
-    jj[i] = i % 400
+    jj[i] = i % n_s
     jj[i] += 1
 
 for i in range(N):
-    kk[i] = i % 100
+    kk[i] = i % n_i
     kk[i] += 1
 
 for i in range(N):
-    y[i] = student_responses[int(i/100)][i%100]
+    y[i] = student_responses[int(i/n_i)][i%n_i]
 
 numpy_array = np.array(jj)
 jj = numpy_array.T
@@ -118,9 +118,20 @@ for sublist in abilities:
     for val in sublist:
         flattened.append(val)
 
+predictions = fit['predictions']
+predictions = predictions[int(predictions.shape[0] / 2):]
+predictions = np.mean(predictions, axis=0)
 
-corr, _ = pearsonr(alpha[0]+delta[0], flattened)
+alpha = alpha[int(alpha.shape[0] / 2):]
+alpha = np.mean(alpha,axis=1)
+
+delta = np.mean(delta,axis=0)
+
+corr, _ = pearsonr(alpha + delta, flattened)
 print('Pearsons correlation: %.3f' % corr)
 
-corr, _ = spearmanr(alpha[0] + delta[0], flattened)
+corr, _ = spearmanr(alpha + delta, flattened)
 print('Spearmans correlation: %.3f' % corr)
+
+plt.plot(alpha, flattened)
+plt.savefig('correlation.png')
