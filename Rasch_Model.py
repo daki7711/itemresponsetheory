@@ -68,7 +68,7 @@ kk = [0] * N
 y = [0] * N
 
 for i in range(N):
-    jj[i] = i % n_s
+    jj[i] = int(i / n_i)
     jj[i] += 1
 
 for i in range(N):
@@ -118,13 +118,13 @@ for sublist in abilities:
     for val in sublist:
         flattened.append(val)
 
-predictions = fit['predictions']
-predictions = predictions[int(predictions.shape[0] / 2):]
-predictions = np.mean(predictions, axis=0)
+#predictions = fit['predictions']
+#predictions = predictions[int(predictions.shape[0] / 2):]
+#predictions = np.mean(predictions, axis=0)
 
-alpha = alpha[int(alpha.shape[0] / 2):]
-alpha = np.mean(alpha,axis=1)
-
+#alpha = alpha[int(alpha.shape[0] / 2):]
+alpha = np.mean(alpha,axis=0)
+print(len(alpha))
 delta = np.mean(delta,axis=0)
 
 corr, _ = pearsonr(alpha + delta, flattened)
@@ -133,5 +133,7 @@ print('Pearsons correlation: %.3f' % corr)
 corr, _ = spearmanr(alpha + delta, flattened)
 print('Spearmans correlation: %.3f' % corr)
 
-plt.plot(alpha, flattened)
+print(fit)
+
+plt.scatter(alpha, flattened)
 plt.savefig('correlation.png')
