@@ -55,12 +55,12 @@ pearson_ability = []
 pearson_item = []
 
 print("Starting the iteration")
-for i in range(10):
+for i in range(1,10):
     spearman_ability_temp = []
     spearman_item_temp = []
     pearson_ability_temp = []
     pearson_item_temp = []
-    for j in range(3):
+    for j in range(5):
         n_s = 100  # number of students
         n_i = 100  # number of items
         # pick a random ability for each student from an N(0,1) distribution
@@ -179,7 +179,7 @@ for i in range(10):
     pearson_ability.append(Average(pearson_ability_temp))
     pearson_item.append(Average(pearson_item_temp))
 
-
+'''
 plt.title('The Ability plot(Spearman)')
 plt.xlabel('Percent of Missing Data')
 plt.ylabel('Spearman Rank Correlation')
@@ -206,3 +206,14 @@ plt.xlabel('Percent of Missing Data')
 plt.ylabel('Pearson Correlation')
 plt.plot([0,10,20,30,40,50,60,70,80,90],pearson_item,'r^')
 plt.savefig('Pearson Correlation of Item Difficulty.png')
+'''
+
+plt.title('Four Graphs')
+plt.xlabel('Percent of Missing Data')
+plt.ylabel('Correlation')
+plt.plot([10,20,30,40,50,60,70,80,90],spearman_ability,'go', label = 'spearman_ablilty')
+plt.plot([10,20,30,40,50,60,70,80,90],pearson_ability,'ro', label = 'pearson ability')
+plt.plot([10,20,30,40,50,60,70,80,90],spearman_item,'g^', label = 'spearman item')
+plt.plot([10,20,30,40,50,60,70,80,90],pearson_item,'r^', lable = 'pearson item')
+plt.legend(loc="upper right")
+plt.savefig('Correlation graph.png')
