@@ -24,28 +24,24 @@ data {
   int<lower=1,upper=J> jj_obs[N_obs];  // student for observation n
   int<lower=1,upper=K> kk_obs[N_obs];  // question for observation n
   real<lower=0,upper=1> y_obs[N_obs];   // correctness for observation n
-
 }
-
 parameters {
   real delta;         // mean student ability
   real alpha[J];      // ability of student j - mean ability
   real beta[K];       // difficulty of question k
 }
-
 model {
   alpha ~ std_normal();         // informative true prior
   beta ~ std_normal();          // informative true prior
   delta ~ normal(0.75, 1);      // informative true prior
-
   for (n in 1:N_obs){
     real in_logit;
+    real mea;
     in_logit = alpha[jj_obs[n]] - beta[kk_obs[n]] + delta;
-    if(in_logit <= 0) in_logit=0.000001;
-    if(in_logit >= 1) in_logit=0.999999;
-    real mean = inv_logit(in_logit);
-
-    y_obs[n] ~ beta_proportion(mean, kappa);
+    //if(in_logit <= 0) in_logit=0.000001;
+    //if(in_logit >= 1) in_logit=0.999999;
+    mea = inv_logit(in_logit);
+    y_obs[n] ~ beta_proportion(mea, kappa);
   }
 }
 '''
@@ -62,7 +58,7 @@ for i in range(1,10):
     spearman_item_temp = []
     pearson_ability_temp = []
     pearson_item_temp = []
-    for j in range(5):
+    for j in range(10):
         n_s = 100  # number of students
         n_i = 100  # number of items
         # pick a random ability for each student from an N(0,1) distribution
@@ -131,7 +127,10 @@ for i in range(1,10):
                }
 
         sm = pystan.StanModel(model_code=model)
-        fit = sm.sampling(data=dat)
+        try:
+            fit = sm.sampling(data=dat)
+        except:
+            continue
         #fit = sm.sampling(data=dat,init_r=0.1)
 
         la = fit.extract(permuted=True)  # return a dictionary of arrays
